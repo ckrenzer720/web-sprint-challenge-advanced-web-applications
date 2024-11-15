@@ -36,7 +36,7 @@ export default function App() {
   };
   const login = async (username, password) => {
     // We should flush the message state, turn on the spinner
-    setSpinnerOn(spinnerOn);
+    setSpinnerOn(true);
     // and launch a request to the proper endpoint.
     try {
       const { data } = await axios.post(loginUrl, {
@@ -49,6 +49,7 @@ export default function App() {
       // to the Articles screen. Don't forget to turn off the spinner!
       redirectToArticles();
       setMessage(`Here are your articles, ${username}!`);
+      setSpinnerOn(false);
     } catch (error) {
       setMessage(
         error?.response?.data?.message || "An error occured, please try again"
@@ -56,33 +57,47 @@ export default function App() {
     }
   };
 
-  const getArticles = () => {
+  const getArticles = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       redirectToLogin();
       return;
     }
     try {
-      const res = axios.get(articlesUrl, { headers: { Authorization: token } });
-      setArticles(res.data);
-      setMessage(message);
+      const response = await axios.get(articlesUrl, {
+        headers: { Authorization: token },
+      });
+      // On success, we should set the articles in their proper state and
+      setArticles(response.data.articles);
+      setMessage(response.data.message);
     } catch (error) {
       if (error?.response?.status == 401) logout();
     }
-    // We should flush the message state, turn on the spinner
-    // and launch an authenticated request to the proper endpoint.
-    // On success, we should set the articles in their proper state and
     // put the server success message in its proper state.
     // If something goes wrong, check the status of the response:
     // if it's a 401 the token might have gone bad, and we should redirect to login.
     // Don't forget to turn off the spinner!
   };
 
-  const postArticle = (article) => {
+  const postArticle = async (article) => {
+    const { title, text, topic } = article;
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    const token = localStorage.getItem("token");
+    if (!token) {
+      redirectToLogin();
+      return;
+    }
+    try {
+      const response = await axios.post(articlesUrl, article, {
+        headers: { Authorization: token },
+      });
+    } catch (error) {
+      console.error("Failed to post article:", error);
+      setMessage("Failed to post article. Please try again.");
+    }
   };
 
   const updateArticle = ({ article_id, article }) => {

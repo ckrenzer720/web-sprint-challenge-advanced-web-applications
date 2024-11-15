@@ -1,21 +1,14 @@
 import React, { useState } from "react";
 import PT from "prop-types";
-import axios from "axios";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
 
 const initialFormValues = {
   username: "",
   password: "",
 };
 
-const loginUrl = "http://localhost:9000/api/login";
-
 export default function LoginForm(props) {
   const [values, setValues] = useState(initialFormValues);
   // ✨ where are my props? Destructure them here
-  const { username, password } = props;
-  const navigate = useNavigate();
 
   const onChange = (evt) => {
     const { id, value } = evt.target;
@@ -32,6 +25,9 @@ export default function LoginForm(props) {
     // Trimmed username must be >= 3, and
     // trimmed password must be >= 8 for
     // the button to become enabled
+    return (
+      values.username.trim().length < 3 || values.password.trim().length < 8
+    );
   };
 
   return (

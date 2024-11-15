@@ -1,30 +1,38 @@
-import React, { useState } from 'react'
-import PT from 'prop-types'
+import React, { useState } from "react";
+import PT from "prop-types";
+import axios from "axios";
+import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 const initialFormValues = {
-  username: '',
-  password: '',
-}
+  username: "",
+  password: "",
+};
+
+const loginUrl = "http://localhost:9000/api/login";
+
 export default function LoginForm(props) {
-  const [values, setValues] = useState(initialFormValues)
+  const [values, setValues] = useState(initialFormValues);
   // ✨ where are my props? Destructure them here
+  const { username, password } = props;
+  const navigate = useNavigate();
 
-  const onChange = evt => {
-    const { id, value } = evt.target
-    setValues({ ...values, [id]: value })
-  }
+  const onChange = (evt) => {
+    const { id, value } = evt.target;
+    setValues({ ...values, [id]: value });
+  };
 
-  const onSubmit = evt => {
-    evt.preventDefault()
-    // ✨ implement
-  }
+  const onSubmit = (evt) => {
+    evt.preventDefault();
+    const { username, password } = evt.target;
+    props.login(username.value, password.value);
+  };
 
   const isDisabled = () => {
-    // ✨ implement
     // Trimmed username must be >= 3, and
     // trimmed password must be >= 8 for
     // the button to become enabled
-  }
+  };
 
   return (
     <form id="loginForm" onSubmit={onSubmit}>
@@ -43,12 +51,14 @@ export default function LoginForm(props) {
         placeholder="Enter password"
         id="password"
       />
-      <button disabled={isDisabled()} id="submitCredentials">Submit credentials</button>
+      <button disabled={isDisabled()} id="submitCredentials">
+        Submit credentials
+      </button>
     </form>
-  )
+  );
 }
 
 // 🔥 No touchy: LoginForm expects the following props exactly:
 LoginForm.propTypes = {
   login: PT.func.isRequired,
-}
+};

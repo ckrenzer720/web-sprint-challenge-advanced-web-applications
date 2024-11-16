@@ -85,11 +85,21 @@ export default function App() {
   const postArticle = async (article) => {
     setSpinnerOn(true);
     setMessage("");
-    let token = localStorage.getItem("token");
     axios
-      .post(articlesUrl, article, { headers: { Authorization: token } })
+      .post(articlesUrl, article, {
+        headers: { Authorization: localStorage.getItem("token") },
+      })
       .then((res) => {
-        console.log(res);
+        setMessage(res.data.message);
+        setArticles((articles) => {
+          return articles.concat(res.data.article);
+        });
+      })
+      .catch((err) => {
+        setMessage(err?.response?.data?.message || "Uh Oh. Something Happened");
+      })
+      .finally(() => {
+        setSpinnerOn(false);
       });
   };
 

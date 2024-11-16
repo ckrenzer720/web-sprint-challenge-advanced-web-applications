@@ -1,19 +1,29 @@
 import React, { useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import PT from "prop-types";
 
 export default function Articles(props) {
+  const {
+    articles,
+    getArticles,
+    deleteArticle,
+    currentArticleId,
+    setCurrentArticleId,
+  } = props;
+
+  if (!localStorage.getItem("token")) {
+    return <Navigate to="/" />;
+  }
   useEffect(() => {
-    props.getArticles();
+    getArticles();
   }, []);
 
   return (
-    // ✨ fix the JSX: replace `Function.prototype` with actual functions
-    // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
-      {!props.articles.length
+      {!articles.length
         ? "No articles yet"
-        : props.articles.map((art) => {
+        : articles.map((art) => {
             return (
               <div className="article" key={art.article_id}>
                 <div>
@@ -22,10 +32,16 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>
+                  <button
+                    disabled={!!currentArticleId}
+                    onClick={() => setCurrentArticleId(art.article_id)}
+                  >
                     Edit
                   </button>
-                  <button disabled={true} onClick={Function.prototype}>
+                  <button
+                    disabled={!!currentArticleId}
+                    onClick={() => deleteArticle(art.article_id)}
+                  >
                     Delete
                   </button>
                 </div>
